@@ -226,7 +226,7 @@ FROM base
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo curl unzip parallel time
 
-COPY container-entrypoint.sh entrypoint.sh
+COPY sagemaker-entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 COPY sync.sh sync.sh
 RUN chmod +x sync.sh
@@ -237,6 +237,6 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     sudo ./aws/install && \
     rm -rf aws awscliv2.zip
 
-# ENTRYPOINT ["./entrypoint.sh"]
-ENTRYPOINT ["lorax-launcher"]
-CMD ["--json-output"]
+ENTRYPOINT ["./entrypoint.sh"]
+# ENTRYPOINT ["lorax-launcher"]
+# CMD ["--json-output"]
