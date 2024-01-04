@@ -218,24 +218,34 @@ COPY --from=builder /usr/src/target/release/lorax-launcher /usr/local/bin/lorax-
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
     g++ \
+    sudo \
+    curl \
+    unzip \
+    parallel \
+    time \
     && rm -rf /var/lib/apt/lists/*
-
-
-# Final image
-FROM base
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends sudo curl unzip parallel time
-
-COPY container-entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
-COPY sync.sh sync.sh
-RUN chmod +x sync.sh
-
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     sudo ./aws/install && \
     rm -rf aws awscliv2.zip
+
+COPY sync.sh sync.sh
+RUN chmod +x sync.sh
+
+# SageMaker compatible image
+FROM base as sagemaker
+
+COPY sagemaker-entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+# Final image
+FROM base
+
+COPY container-entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # ENTRYPOINT ["./entrypoint.sh"]
 ENTRYPOINT ["lorax-launcher"]

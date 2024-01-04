@@ -6,6 +6,12 @@ if [[ -z "${HF_MODEL_ID}" ]]; then
 fi
 export MODEL_ID="${HF_MODEL_ID}"
 
+if [[ -z "${LORAX_ADAPTER_BUCKET}" ]]; then
+  echo "Warning: LORAX_ADAPTER_BUCKET not set. Only able to load local or HuggingFace Hub adapters."
+else
+  export PREDIBASE_MODEL_BUCKET="${LORAX_ADAPTER_BUCKET}"
+fi
+
 if [[ -n "${HF_MODEL_REVISION}" ]]; then
   export REVISION="${HF_MODEL_REVISION}"
 fi
